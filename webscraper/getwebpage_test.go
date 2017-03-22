@@ -1,4 +1,4 @@
-package web_scrape_go
+package webscraper
 
 import (
 	"testing"
