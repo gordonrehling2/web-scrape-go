@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"log"
 
 	"github.com/gordonrehling2/web-scrape-go/webscraper"
@@ -22,5 +23,11 @@ func main() {
 	//fmt.Println(string(page))
 	if err != nil {
 		log.Printf("can't open %s due to error '%s'\n", targetURL, err.Error())
+	}
+
+	urls := webscraper.GetLinksWithDivClass(page, "productInfo")
+	fmt.Println(len(urls))
+	for i, url := range urls {
+		fmt.Println(i, url)
 	}
 }
