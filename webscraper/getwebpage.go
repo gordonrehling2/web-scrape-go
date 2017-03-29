@@ -3,28 +3,59 @@ package webscraper
 import (
 	"io/ioutil"
 	"net/http"
+	"net/url"
+	"sync"
 )
 
+var jar *Jar
+
+func init() {
+	jar = NewJar()
+}
+
+type Jar struct {
+	lk      sync.Mutex
+	cookies map[string][]*http.Cookie
+}
+
+func NewJar() *Jar {
+	jar := new(Jar)
+	jar.cookies = make(map[string][]*http.Cookie)
+	return jar
+}
+
+// SetCookies handles the receipt of the cookies in a reply for the
+// given URL.  It may or may not choose to save the cookies, depending
+// on the jar's policy and implementation.
+func (jar *Jar) SetCookies(u *url.URL, cookies []*http.Cookie) {
+	jar.lk.Lock()
+	jar.cookies[u.Host] = cookies
+	jar.lk.Unlock()
+}
+
+// Cookies returns the cookies to send in a request for the given URL.
+// It is up to the implementation to honor the standard cookie use
+// restrictions such as in RFC 6265.
+func (jar *Jar) Cookies(u *url.URL) []*http.Cookie {
+	return jar.cookies[u.Host]
+}
+
 // GetWebPage gets the page for the given url, with a valid cookie
-func GetWebPage(url, cookie string) (page []byte, err error) {
-	// Get page
-	//response, err := http.Get(url)
-	client := &http.Client{}
+func GetWebPage(url string) (page []byte, err error) {
+	// use a client and use the CookieJar interface
+	client := &http.Client{nil, nil, jar, 0}
 	request, err := http.NewRequest("GET", url, nil)
 
-	// When GOL updated on Mon 27-Mar-17, link changed and need to add this cookie Header to get data back
-	request.Header.Set("Cookie", cookie)
 	response, err := client.Do(request)
 	if err != nil {
 		// http.Get error pass upwards
 		return
 	}
-
 	defer response.Body.Close()
 
 	page, err = ioutil.ReadAll(response.Body)
 	if err != nil {
-		// ioutil.ReadAll error pass upwards
+		// pass ioutil.ReadAll error upwards
 		return
 	}
 
