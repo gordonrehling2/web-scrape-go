@@ -12,10 +12,10 @@ import (
 
 // ProductData contains the data we want to scrape from the page
 type ProductData struct {
-	title       string
-	size        string
-	unitPrice   float64
-	description string
+	Title       string  `json:"title"`
+	Size        string  `json:"size"`
+	UnitPrice   float64 `json:"unit_price"`
+	Description string  `json:"description"`
 }
 
 // attrKeyValueMatches searches Tag Attributes, returning one of the searchValues if it finds a match e.g. class productText
@@ -52,7 +52,7 @@ func attrKeyValuesMatch(tok *html.Tokenizer, searchKey string, searchValues []st
 //	<p>Avocados</p>
 func GetPageProductData(page []byte) ProductData {
 	productData := ProductData{}
-	productData.size = strconv.FormatFloat(float64(len(page)/1000), 'f', -1, 64) + "kb"
+	productData.Size = strconv.FormatFloat(float64(len(page)/1000), 'f', -1, 64) + "kb"
 
 	// set up tokenizer
 	tok := html.NewTokenizer(bytes.NewReader(page))
@@ -110,7 +110,7 @@ func GetPageProductData(page []byte) ProductData {
 			}
 		case html.TextToken:
 			if inProductTitle && inProductTitleH1 {
-				productData.title = string(tok.Text())
+				productData.Title = string(tok.Text())
 				inProductTitle = false
 				inProductTitleH1 = false
 				continue
@@ -123,12 +123,12 @@ func GetPageProductData(page []byte) ProductData {
 				if err != nil {
 					log.Fatal(err)
 				}
-				productData.unitPrice = f
+				productData.UnitPrice = f
 				inPricePerUnit = false
 				continue
 			}
 			if inProductTextP && notSeenOne {
-				productData.description = string(tok.Text())
+				productData.Description = string(tok.Text())
 				inProductText = false
 				inProductTextP = false
 				notSeenOne = false

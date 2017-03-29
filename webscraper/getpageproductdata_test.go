@@ -88,22 +88,22 @@ func TestGetPageProductData(t *testing.T) {
 
 	// THEN
 	expectedData := ProductData{
-		title:       "Sainsbury's Avocado, Ripe & Ready x2",
-		size:        "2kb",
-		unitPrice:   1.9,
-		description: "Avocados",
+		Title:       "Sainsbury's Avocado, Ripe & Ready x2",
+		Size:        "2kb",
+		UnitPrice:   1.9,
+		Description: "Avocados",
 	}
-	if productData.title != expectedData.title {
-		t.Errorf("Test failed, title: expected '%s', got '%s'", expectedData.title, productData.title)
+	if productData.Title != expectedData.Title {
+		t.Errorf("Test failed, Title: expected '%s', got '%s'", expectedData.Title, productData.Title)
 	}
-	if productData.size != expectedData.size {
-		t.Errorf("Test failed, size: expected '%s', got '%s'", expectedData.size, productData.size)
+	if productData.Size != expectedData.Size {
+		t.Errorf("Test failed, Size: expected '%s', got '%s'", expectedData.Size, productData.Size)
 	}
-	if productData.unitPrice != expectedData.unitPrice {
-		t.Errorf("Test failed, unitPrice: expected '%.2f', got '%.2f'", expectedData.unitPrice, productData.unitPrice)
+	if productData.UnitPrice != expectedData.UnitPrice {
+		t.Errorf("Test failed, UnitPrice: expected '%.2f', got '%.2f'", expectedData.UnitPrice, productData.UnitPrice)
 	}
-	if productData.description != expectedData.description {
-		t.Errorf("Test failed, description: expected '%s', got '%s'", expectedData.description, productData.description)
+	if productData.Description != expectedData.Description {
+		t.Errorf("Test failed, Description: expected '%s', got '%s'", expectedData.Description, productData.Description)
 	}
 
 }
