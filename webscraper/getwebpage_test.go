@@ -8,15 +8,15 @@ var cookie = "_ga=GA1.3.1970836756.1488187879; Apache=10.173.10.13.1490193304969
 
 func TestGetWebPage(t *testing.T) {
 	tests := [...]struct {
-		url         string
-		wantPageLen int
-		wantErr     error
+		url            string
+		wantNonZeroLen bool
+		wantErr        error
 	}{
 		// TestNo  TestData
 		0: {
-			url:         "http://geo.groupkt.com/ip/172.217.3.14/json",
-			wantPageLen: 371,
-			wantErr:     nil,
+			url:            "http://geo.groupkt.com/ip/172.217.3.14/json",
+			wantNonZeroLen: true,
+			wantErr:        nil,
 		},
 	}
 
@@ -27,8 +27,15 @@ func TestGetWebPage(t *testing.T) {
 			t.Errorf("Test %d failed, expected '%s', got '%s'", i, td.wantErr, err)
 		}
 
-		if td.wantPageLen != len(page) {
-			t.Errorf("Test %d failed, expected '%d', got '%d'", i, td.wantPageLen, len(page))
+		if td.wantNonZeroLen {
+			if len(page) == 0 {
+				t.Errorf("Test %d failed, expected len > 0, got '%d'", i, len(page))
+
+			}
+		} else {
+			if len(page) > 0 {
+				t.Errorf("Test %d failed, expected len == 0, got '%d'", i, len(page))
+			}
 		}
 	}
 
