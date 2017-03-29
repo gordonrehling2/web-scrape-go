@@ -52,7 +52,7 @@ func attrKeyValuesMatch(tok *html.Tokenizer, searchKey string, searchValues []st
 //	<p>Avocados</p>
 func GetPageProductData(page []byte) ProductData {
 	productData := ProductData{}
-	productData.Size = strconv.FormatFloat(float64(len(page)/1000), 'f', -1, 64) + "kb"
+	productData.Size = strconv.FormatFloat(float64(len(page)/1024), 'f', -1, 64) + "kb"
 
 	// set up tokenizer
 	tok := html.NewTokenizer(bytes.NewReader(page))
