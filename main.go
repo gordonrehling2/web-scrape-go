@@ -29,19 +29,10 @@ func fatalBadURL(url string, err error) {
 	log.Fatal("giving up...")
 }
 
-func main() {
-	// get the target page
-	page, err := webscraper.GetWebPage(targetURL)
-	//fmt.Println(string(page))
-	if err != nil {
-		fatalBadURL(targetURL, err)
-	}
-
-	// get all the product URLs
-	urls := webscraper.GetLinksWithDivClass(page, "productInfo")
-
+func processURLs(urls []string) Result {
 	// Create result structure
 	result := Result{}
+
 	// Use int to sum unit prices, to avoid rounding errors
 	pence := 0
 	for _, url := range urls {
@@ -60,15 +51,31 @@ func main() {
 	// convert pence to pounds
 	result.Total = float64(pence) / 100
 
-	// This is actualJSON
+	return result
+}
+
+func main() {
+	// get the target page
+	page, err := webscraper.GetWebPage(targetURL)
+	if err != nil {
+		fatalBadURL(targetURL, err)
+	}
+
+	// get all the product URLs from the page
+	urls := webscraper.GetLinksWithDivClass(page, "productInfo")
+
+	// process the URLs
+	result := processURLs(urls)
+
+	// Create the actual JSON
 	// actualJSON, err := json.Marshal(result)
 
-	// Create prettyJSON with 3 space indent
+	// Create pretty JSON, with 3 space indent
 	prettyJSON, err := json.MarshalIndent(result, "", "   ")
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// Output prettyJSON
+	// Output pretty JSON
 	fmt.Println(string(prettyJSON))
 }
