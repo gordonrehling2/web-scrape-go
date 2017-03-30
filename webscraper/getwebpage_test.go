@@ -21,7 +21,7 @@ func TestGetWebPage(t *testing.T) {
 	}
 
 	for i, td := range tests {
-		page, err := GetWebPage(td.url, cookie)
+		page, err := GetWebPage(td.url)
 
 		if td.wantErr != err {
 			t.Errorf("Test %d failed, expected '%s', got '%s'", i, td.wantErr, err)
