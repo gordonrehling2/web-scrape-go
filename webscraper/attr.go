@@ -24,21 +24,6 @@ func attrKeyValuesMatch(tok *html.Tokenizer, searchKey string, searchValues []st
 	return ""
 }
 
-// attrKeyValueMatch searches Tag Attributes, returning true if it finds a match e.g. class productInfo
-func attrKeyValueMatch(tok *html.Tokenizer, searchKey, searchValue string) bool {
-	// Note: need to declare these because can't use ':= tok.TagAttr' with more declared in for loop
-	var key []byte
-	var value []byte
-	// Search each key/value pair in the Attribute
-	for more := true; more != false; {
-		key, value, more = tok.TagAttr()
-		if string(key) == searchKey && string(value) == searchValue {
-			return true
-		}
-	}
-	return false
-}
-
 // attrKeyMatch searches Tag Attributes
 // returning value and true if it finds a match e.g. href
 func getKeyValue(tok *html.Tokenizer, searchKey string) (string, bool) {

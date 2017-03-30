@@ -29,7 +29,11 @@ func GetLinksWithDivClass(page []byte, divClass string) []string {
 
 			switch string(tagName) {
 			case "div":
-				if matched := attrKeyValueMatch(tok, "class", divClass); matched {
+				searchValues := []string{divClass}
+				match := attrKeyValuesMatch(tok, "class", searchValues)
+
+				switch match {
+				case divClass:
 					inProductInfo = true
 				}
 			case "a":
