@@ -63,7 +63,6 @@ func GetPageProductData(page []byte) ProductData {
 			case "div":
 				searchValues := []string{"productSummary", "productTitleDescriptionContainer", "productText", "mainProductInfoWrapper"}
 				match := attrKeyValuesMatch(tok, "class", searchValues)
-
 				switch match {
 				case "productSummary":
 					inProductSummary = true
@@ -83,7 +82,11 @@ func GetPageProductData(page []byte) ProductData {
 					inProductTextP = true
 					continue
 				}
-				if matched := attrKeyValueMatch(tok, "class", "pricePerUnit"); matched {
+
+				searchValues := []string{"pricePerUnit"}
+				match := attrKeyValuesMatch(tok, "class", searchValues)
+				switch match {
+				case "pricePerUnit":
 					inPricePerUnit = true
 				}
 			}
