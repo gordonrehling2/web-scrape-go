@@ -2,10 +2,9 @@ package webscraper
 
 import (
 	"bytes"
+	"log"
 	"strconv"
 	"strings"
-
-	"log"
 
 	"golang.org/x/net/html"
 )
@@ -16,26 +15,6 @@ type ProductData struct {
 	Size        string  `json:"size"`
 	UnitPrice   float64 `json:"unit_price"`
 	Description string  `json:"description"`
-}
-
-// attrKeyValueMatches searches Tag Attributes, returning one of the searchValues if it finds a match e.g. class productText
-// This is needed when the 'parser' needs to check multiple possible values of Attr
-func attrKeyValuesMatch(tok *html.Tokenizer, searchKey string, searchValues []string) string {
-	// Note: need to declare these because can't use ':= tok.TagAttr' with more declared in for loop
-	var key []byte
-	var value []byte
-	// Search each key/value pair in the Attribute
-	for more := true; more != false; {
-		key, value, more = tok.TagAttr()
-		if string(key) == searchKey {
-			for _, searchValue := range searchValues {
-				if string(value) == searchValue {
-					return searchValue
-				}
-			}
-		}
-	}
-	return ""
 }
 
 // GetPageProductData returns ProductData from the page
