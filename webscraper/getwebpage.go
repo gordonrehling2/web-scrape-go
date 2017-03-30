@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"net/url"
 	"sync"
+	"time"
 )
 
 var jar *Jar
@@ -45,7 +46,7 @@ func (jar *Jar) Cookies(u *url.URL) []*http.Cookie {
 // GetWebPage gets the page for the given url, with a valid cookie
 func GetWebPage(url string) (page []byte, err error) {
 	// use a client and use the CookieJar interface
-	client := &http.Client{nil, nil, jar, 0}
+	client := &http.Client{nil, nil, jar, time.Duration(10) * time.Second}
 	request, err := http.NewRequest("GET", url, nil)
 
 	response, err := client.Do(request)
