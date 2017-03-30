@@ -13,11 +13,13 @@ func init() {
 	jar = NewJar()
 }
 
+// Jar is an implementation of the http.CookieJar interface
 type Jar struct {
 	lk      sync.Mutex
 	cookies map[string][]*http.Cookie
 }
 
+// NewJar is implementation of New for Jar
 func NewJar() *Jar {
 	jar := new(Jar)
 	jar.cookies = make(map[string][]*http.Cookie)
