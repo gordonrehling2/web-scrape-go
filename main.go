@@ -29,12 +29,11 @@ func fatalBadURL(url string, err error) {
 	log.Fatal("giving up...")
 }
 
+// processURLs gets the html for each url and collects required data off the page
 func processURLs(urls []string) Result {
 	// Create result structure
 	result := Result{}
 
-	// Use int to sum unit prices, to avoid rounding errors
-	pence := 0
 	for _, url := range urls {
 		// get product page
 		page, err := webscraper.GetWebPage(url)
@@ -43,15 +42,24 @@ func processURLs(urls []string) Result {
 		}
 		// get the required product data from the product page
 		product := webscraper.GetPageProductData(page)
-		// keep running total of unit prices
-		pence += int(product.UnitPrice * 100)
+
 		// append the product as a slice in the result
 		result.Results = append(result.Results, product)
 	}
+	return result
+}
+
+// postProcess sums the unit prices
+func postProcess(result *Result) {
+	// Use int to sum unit prices, to avoid rounding errors
+	pence := 0
+
+	for _, product := range result.Results {
+		// keep running total of unit prices
+		pence += int(product.UnitPrice * 100)
+	}
 	// convert pence to pounds
 	result.Total = float64(pence) / 100
-
-	return result
 }
 
 func main() {
@@ -64,8 +72,11 @@ func main() {
 	// get all the product URLs from the page
 	urls := webscraper.GetLinksWithDivClass(page, "productInfo")
 
-	// process the URLs
+	// process the URLs to get product data
 	result := processURLs(urls)
+
+	// sum the unit prices and update the total in the result
+	postProcess(&result)
 
 	// Create the actual JSON
 	// actualJSON, err := json.Marshal(result)
