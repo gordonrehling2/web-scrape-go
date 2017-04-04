@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"sync"
 
 	"github.com/gordonrehling2/web-scrape-go/webscraper"
 )
@@ -29,23 +30,53 @@ func fatalBadURL(url string, err error) {
 	log.Fatal("giving up...")
 }
 
+func urlWorker(productData chan webscraper.ProductData, wg *sync.WaitGroup, url string) {
+	// mark as done when func exits
+	defer wg.Done()
+
+	// get product page
+	page, err := webscraper.GetWebPage(url)
+	if err != nil {
+		fatalBadURL(url, err)
+	}
+	// return the required product data from the product page
+	productData <- webscraper.GetPageProductData(page)
+}
+
 // processURLs gets the html for each url and collects required data off the page
 func processURLs(urls []string) Result {
 	// Create result structure
 	result := Result{}
 
-	for _, url := range urls {
-		// get product page
-		page, err := webscraper.GetWebPage(url)
-		if err != nil {
-			fatalBadURL(url, err)
-		}
-		// get the required product data from the product page
-		product := webscraper.GetPageProductData(page)
+	// enable chanBuffLen URLs to be concurrently processed
+	chanBuffLen := 16
 
-		// append the product as a slice in the result
-		result.Results = append(result.Results, product)
+	// Create channel to receive product back from goroutine
+	productData := make(chan webscraper.ProductData, chanBuffLen)
+
+	// create waitgroup to sync data collection, before returning overall result
+	var wg sync.WaitGroup
+
+	// get the workers going
+	for _, url := range urls {
+		// tell the waitgroup that we have another worker
+		wg.Add(1)
+		// spin off the worker
+		go urlWorker(productData, &wg, url)
 	}
+
+	// collect the results
+	for i := 0; i < len(urls); i++ {
+		select {
+		case product := <-productData:
+			// append the product as a slice in the result
+			result.Results = append(result.Results, product)
+		}
+	}
+
+	// wait for all workers to finish before delivering result
+	wg.Wait()
+
 	return result
 }
 
